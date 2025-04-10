@@ -1,37 +1,3 @@
-# OpenChat Bots Tutorial
-
-This repository contains comprehensive resources for creating AI-powered bots in the OpenChat ecosystem. It includes a template for getting started and examples of both off-chain and on-chain bot implementations.
-
-## Directory Structure
-
-1. `openchat-bot-template/` - A starter template that can be forked or installed to begin creating OpenChat bots
-2. `openchat-bot-offchain-example/` - An example implementation of an off-chain OpenChat bot
-3. `openchat-bot-onchain-example/` - An example implementation of an on-chain OpenChat bot (running as a canister)
-
-## Getting Started
-
-Each directory contains its own README with specific instructions for that implementation. Choose the approach that best fits your needs:
-
-- Use the template if you want to start from scratch
-- Check the off-chain example if you want to run a bot without deploying a canister
-- Check the on-chain example if you want to deploy your bot as a canister on the Internet Computer
-
-## Prerequisites
-
-- Node.js (v16 or higher)
-- dfx (for on-chain development)
-- OpenChat account and API credentials
-- Basic knowledge of JavaScript/TypeScript
-- For on-chain development: knowledge of Motoko or Rust
-
-## Contributing
-
-Feel free to contribute to this project by submitting issues or pull requests. We welcome improvements to the examples and documentation.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 # Create OpenChat Bot
 
 A CLI tool to quickly scaffold OpenChat bot templates.
@@ -82,21 +48,50 @@ This will:
 
 ## Development
 
-To contribute to this tool:
+### Local Testing
 
-1. Clone the repository
-2. Install dependencies:
+To test changes locally without publishing to npm:
+
+1. In the CLI tool's directory:
    ```bash
+   # Install dependencies
    npm install
-   ```
-3. Link the package locally:
-   ```bash
+
+   # Create a global link
    npm link
    ```
-4. Make your changes
-5. Test using:
+
+2. In a test directory (anywhere else on your system):
    ```bash
-   create-openchat-bot
+   # Link to your local version
+   npm link create-openchat-bot
+
+   # Test the command
+   npx create-openchat-bot
+   ```
+
+3. Make changes to the code and test them immediately. The changes will be reflected when you run the command again.
+
+4. When you're done testing:
+   ```bash
+   # In your test directory
+   npm unlink create-openchat-bot
+
+   # In your CLI tool's directory
+   npm unlink
+   ```
+
+### Publishing Changes
+
+When you're ready to publish your changes:
+
+1. Update the version in `package.json`
+2. Commit your changes
+3. Create a new tag
+4. Push to GitHub
+5. Publish to npm:
+   ```bash
+   npm publish
    ```
 
 ## License
