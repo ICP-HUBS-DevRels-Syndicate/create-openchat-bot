@@ -72,16 +72,17 @@ async function main() {
         // Copy files from example directory to src maintaining the structure
         shell.cp('-r', `${exampleDir}/*`, path.join(projectDir, 'src'));
         
-        // Copy REGISTER-BOT.md to project root
-        shell.cp(path.join(projectDir, 'REGISTER-BOT.md'), projectDir);
-        
-        // Clean up unnecessary files
+        // Clean up unnecessary files and directories
         spinner.text = 'Cleaning up temporary files...';
         shell.rm('-rf', [
             path.join(projectDir, `${otherType}-example`),
             path.join(projectDir, '.git'),
             path.join(projectDir, 'README.md'),
-            path.join(projectDir, `${botType}-example`)  // Remove original example directory after copying
+            path.join(projectDir, `${botType}-example`),
+            path.join(projectDir, 'bin'),
+            path.join(projectDir, 'images'),
+            path.join(projectDir, 'BOT-DOCUMENTATION.md'),
+            path.join(projectDir, 'REGISTER-BOT.md')
         ]);
         
         // Navigate to src directory
@@ -89,8 +90,32 @@ async function main() {
 
         if (botType === 'offchain') {
             spinner.text = 'Updating package configuration...';
-            // Update package name in Cargo.toml
-            shell.sed('-i', 'name = "offchain_bot"', `name = "${botName}"`, 'Cargo.toml');
+            
+            // Update Cargo.toml with latest dependencies
+            const cargoToml = `[package]
+name = "${botName}"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-trait = "0.1.77"
+axum = "0.7.4"
+candid = "0.10.3"
+dotenv = "0.15.0"
+http = "1.0.0"
+ic-agent = "0.31.0"
+oc_bots_sdk = { git = "https://github.com/open-chat-labs/open-chat-bots.git", branch = "main" }
+oc_bots_sdk_offchain = { git = "https://github.com/open-chat-labs/open-chat-bots.git", branch = "main" }
+reqwest = "0.11.24"
+serde = { version = "1.0.196", features = ["derive"] }
+serde_json = "1.0.113"
+tokio = { version = "1.36.0", features = ["full"] }
+tower-http = { version = "0.5.1", features = ["cors", "trace"] }
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"`;
+
+            // Write the updated Cargo.toml
+            fs.writeFileSync('Cargo.toml', cargoToml);
             
             spinner.text = 'Configuring bot identity...';
             // Update identity name in setup_bot.sh
@@ -107,6 +132,16 @@ async function main() {
             if (result.code !== 0) {
                 console.error(red('Setup script failed:'));
                 console.error(result.stderr);
+                process.exit(1);
+            }
+
+            // Run cargo build to verify everything works
+            console.log(blue('\nBuilding the project...\n'));
+            const buildResult = shell.exec('cargo build');
+            
+            if (buildResult.code !== 0) {
+                console.error(red('Build failed:'));
+                console.error(buildResult.stderr);
                 process.exit(1);
             }
         } else {
@@ -138,14 +173,13 @@ async function main() {
 
         // Display next steps
         console.log('\nNext steps:');
-        console.log(`1. Navigate to your bot directory: ${blue(`cd ${botName}/`)}`);
+        console.log(`1. Navigate to your bot directory: ${blue(`cd ${botName}/src`)}`);
         if (botType === 'offchain') {
-            console.log(`1. Run the setup script: ${blue('./src/scripts/setup_bot.sh')}`);
             console.log(`2. Start your bot: ${blue('cargo run')}`);
         } else {
-            console.log(`1. Deploy your bot: ${blue('./scripts/deploy_bot.sh')}`);
+            console.log(`2. Deploy your bot: ${blue('./scripts/deploy_bot.sh')}`);
         }
-        console.log(`3. Follow the registration instructions in ${blue('REGISTER-BOT.md')}`);
+        console.log(`3. Follow the bot setup and registration instructions at: ${blue('https://docs.oc.app/bot-creation')}`);
         console.log('\nHappy bot building! 🎉\n');
 
     } catch (error) {

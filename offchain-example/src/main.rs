@@ -2,31 +2,21 @@ use axum::{
     body::Bytes,
     extract::State,
     http::{HeaderMap, StatusCode},
-    response::IntoResponse,
     routing::{get, post},
     Router,
 };
-use candid::{CandidType, Encode, Principal};
 use dotenv::dotenv;
-use oc_bots_sdk::{api::command::{CommandHandlerRegistry, CommandResponse}, types::BotCommandContext};
-use oc_bots_sdk::api::definition::{
-    BotCommandDefinition, BotCommandParam, BotCommandParamType, BotDefinition, BotPermissions,
-    MessagePermission, StringParam, BotCommandOptionChoice,
-};
+use oc_bots_sdk::api::command::{CommandHandlerRegistry, CommandResponse};
+use oc_bots_sdk::api::definition::BotDefinition;
 use oc_bots_sdk::oc_api::client_factory::ClientFactory;
-use oc_bots_sdk_offchain::env;
-use oc_bots_sdk_offchain::AgentRuntime;
-use reqwest::Client as ReqwestClient;
-use serde::{Deserialize, Serialize};
+use oc_bots_sdk_offchain::{env, AgentRuntime};
+use serde::Deserialize;
 use std::net::{Ipv4Addr, SocketAddr};
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 use tracing::{info, error};
 use tracing_subscriber::fmt::format::FmtSpan;
-use serde_json::json;
-use ic_agent::Agent;
-use std::sync::LazyLock;
 
 mod config;
 mod commands;
@@ -77,14 +67,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Build agent for OpenChat communication
     let agent = oc_bots_sdk_offchain::build_agent(config.ic_url.clone(), &config.pem_file).await;
 
-    // Create client factory
-    let oc_client_factory = Arc::new(ClientFactory::new(AgentRuntime::new(
-        agent.clone(),
-        tokio::runtime::Runtime::new().unwrap(),
-    )));
+    // Create runtime and client factory
+    let runtime = AgentRuntime::new(agent, tokio::runtime::Runtime::new()?);
+    let client_factory = Arc::new(ClientFactory::new(runtime));
 
     // Create command registry and register the echo command
-    let commands = CommandHandlerRegistry::new(oc_client_factory)
+    let commands = CommandHandlerRegistry::new(client_factory)
         .register(commands::echo::Echo);
 
     let app_state = AppState {
@@ -95,7 +83,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create router with endpoints
     let app = Router::new()
         .route("/", get(bot_definition))
-        .route("/bot_definition", get(bot_definition)) 
+        .route("/bot_definition", get(bot_definition))
         .route("/execute", post(execute_command))
         .route("/execute_command", post(execute_command))
         .layer(CorsLayer::permissive())
@@ -132,7 +120,6 @@ async fn bot_definition(State(state): State<Arc<AppState>>) -> (StatusCode, Byte
 async fn execute_command(
     State(state): State<Arc<AppState>>, 
     headers: HeaderMap,
-    bytes: Bytes,
 ) -> (StatusCode, Bytes) {
     info!("=== Command Execution Start ===");
     info!("Headers: {:?}", headers);
