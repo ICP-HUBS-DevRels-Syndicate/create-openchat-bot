@@ -91,6 +91,9 @@ offchain-example/
 ├── scripts/                    # Setup scripts
 │   └── setup_bot.sh           # Main setup script
 ├── src/                       # Source code
+|   ├── commands/ 
+|   |      └── echo.rs         # Echo command handler
+|   |      └── mod.rs          # exporting echo mod
 │   ├── config.rs              # Configuration management
 │   ├── main.rs                # Main application entry point
 │   └── bot.rs                 # Bot implementation
@@ -107,18 +110,29 @@ offchain-example/
 name = "offchain_bot"
 version = "0.1.0"
 edition = "2021"
-description = "A boilerplate for creating offchain bots for OpenChat"
-authors = ["Your Name <your.email@example.com>"]
-license = "MIT"
 
 [dependencies]
+async-trait = "0.1.86"
+axum = "0.8.1"
+candid = "0.10.10"
+dotenv = "0.15.0"
+ic-agent = "0.39.3"
+serde = { version = "1.0.217", features = ["derive"] }
+serde_json = "1.0.138"
+tokio = { version = "1.37.0", features = ["full"] }
+toml = "0.8.20"
+tower-http = { version = "0.6.2", features = ["cors", "trace"] }
+tracing = "0.1.41"
+tracing-subscriber = "0.3.19"
 oc_bots_sdk = { git = "https://github.com/open-chat-labs/open-chat-bots.git", branch = "main" }
-tokio = { version = "1.36.0", features = ["full"] }
-serde = { version = "1.0.193", features = ["derive"] }
-serde_json = "1.0.108"
-tracing = "0.1.40"
-tracing-subscriber = "0.3.18"
-toml = "0.8.10"
+oc_bots_sdk_offchain = { git = "https://github.com/open-chat-labs/open-chat-bots.git", branch = "main" }
+reqwest = { version = "0.11", features = ["json"] }
+
+[profile.release]
+lto = true
+opt-level = "z"
+codegen-units = 1
+debug = false
 ```
 
 #### 2. src/config.rs
@@ -133,19 +147,47 @@ The main entry point that:
 - Loads configuration
 - Initializes and runs the bot
 
-#### 4. src/bot.rs
-Implements the bot's core functionality:
-- Command handling
-- Message processing
-- OpenChat API integration
+#### 4. src/commands/echo.rs
+Implements the echo command functionality:
+- Defines the command structure using `BotCommandDefinition`
+- Implements the `CommandHandler` trait for the `Echo` struct
+- Handles command execution using the OpenChat API client
+- Supports message parameters with validation (min/max length)
+- Returns the echoed message to the user
+
+The command definition includes:
+- Command name and description
+- Parameter configuration (message with length constraints)
+- Required permissions (text message permission)
+- Placeholder text for user guidance
+
+The command handler:
+- Extracts the message parameter from the command context
+- Uses the OpenChat client factory to create a client
+- Sends the message back to the user
+- Returns a success result with the sent message
 
 ### Bot Functionality
 
 The example bot implements a simple echo command that:
-1. Accepts a message parameter
-2. Sends the message back to the user
-3. Supports markdown formatting
-4. Handles errors gracefully
+1. Accepts a single required parameter called "message"
+2. Validates the message length (between 1 and 10,000 characters)
+3. Supports multi-line messages
+4. Requires text message permissions
+5. Returns the exact message back to the user
+6. Provides helpful placeholders and descriptions for user guidance
+
+The command can be invoked in OpenChat using:
+```
+/echo message: Your message here
+```
+
+The code structure follows these principles:
+- Clear command definition with proper metadata
+- Type-safe parameter handling
+- Proper error handling through Result types
+- Thread-safe implementation using LazyLock
+- Clean separation between command definition and execution
 
 ### Extending the Bot
 
