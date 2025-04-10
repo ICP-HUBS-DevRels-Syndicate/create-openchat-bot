@@ -2,12 +2,13 @@
 /target/
 **/*.rs.bk
 Cargo.lock
+node_modules/
 
 # IDE specific
 .idea/
 .vscode/
 *.swp
-*.swo
+*.swo 
 
 # Environment variables
 .env

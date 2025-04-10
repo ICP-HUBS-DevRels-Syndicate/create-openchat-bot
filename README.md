@@ -54,7 +54,11 @@ To test changes locally without publishing to npm:
 
 1. In the CLI tool's directory:
    ```bash
-   # Install dependencies
+   # Clone the repository (if you haven't already)
+   git clone <your-repo-url>
+   cd <repo-directory>
+
+   # Install all dependencies (IMPORTANT: Do this first!)
    npm install
 
    # Create a global link
@@ -63,6 +67,9 @@ To test changes locally without publishing to npm:
 
 2. In a test directory (anywhere else on your system):
    ```bash
+   # Create a new directory for testing
+   mkdir test-bot && cd test-bot
+
    # Link to your local version
    npm link create-openchat-bot
 

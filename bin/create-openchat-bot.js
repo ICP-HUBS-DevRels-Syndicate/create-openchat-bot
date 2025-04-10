@@ -56,29 +56,51 @@ async function main() {
 
     try {
         // Clone the template repository
+        spinner.text = 'Cloning template repository...';
         shell.exec(`git clone https://github.com/ICP-HUBS-DevRels-Syndicate/openchat-bots.git ${botName}`, { silent: true });
 
         // Navigate to the correct example directory
         const exampleDir = path.join(projectDir, `${botType}-example`);
-        shell.cd(exampleDir);
+        const otherType = botType === 'offchain' ? 'onchain' : 'offchain';
+        
+        spinner.text = 'Setting up project structure...';
+        // Copy only the needed example directory and common files
+        shell.cp('-r', path.join(projectDir, 'REGISTER-BOT.md'), projectDir);
+        shell.cp('-r', path.join(projectDir, `${botType}-example`), projectDir);
+        shell.mv(path.join(projectDir, `${botType}-example`), path.join(projectDir, 'src'));
+        
+        // Clean up unnecessary files
+        spinner.text = 'Cleaning up temporary files...';
+        shell.rm('-rf', path.join(projectDir, `${otherType}-example`));
+        shell.rm('-rf', path.join(projectDir, '.git'));
+        shell.rm('-rf', path.join(projectDir, 'README.md'));
+        
+        // Navigate to source directory
+        shell.cd(path.join(projectDir, 'src'));
 
         if (botType === 'offchain') {
+            spinner.text = 'Updating package configuration...';
             // Update package name in Cargo.toml
             shell.sed('-i', 'name = "offchain_bot"', `name = "${botName}"`, 'Cargo.toml');
             
+            spinner.text = 'Configuring bot identity...';
             // Update identity name in setup_bot.sh
             shell.sed('-i', 'bot_identity', `${botName}_identity`, 'scripts/setup_bot.sh');
             
+            spinner.text = 'Running setup script...';
             // Make setup script executable and run it
             shell.chmod('+x', 'scripts/setup_bot.sh');
             shell.exec('./scripts/setup_bot.sh', { silent: true });
         } else {
+            spinner.text = 'Updating package configuration...';
             // Update package name in Cargo.toml
             shell.sed('-i', 'name = "onchain_bot"', `name = "${botName}"`, 'Cargo.toml');
             
+            spinner.text = 'Configuring canister...';
             // Update canister name in deploy_bot.sh
             shell.sed('-i', 'onchain_bot', botName, 'scripts/deploy_bot.sh');
             
+            spinner.text = 'Running deployment script...';
             // Make deploy script executable and run it
             shell.chmod('+x', 'scripts/deploy_bot.sh');
             shell.exec('./scripts/deploy_bot.sh', { silent: true });
