@@ -14,6 +14,8 @@
 
 ## Step 3: Register Your Bot
 - In your group, type the `/register-bot` command
+
+#### Onchain Bot:
 - A modal will appear where you need to enter:
   1. **Bot Principal**: The unique ID from your bot URL
      - Example: If your URL is `https://wch4f-miaaa-aaaab-qadfa-cai.raw.icp0.io/`
@@ -23,14 +25,27 @@
      - Example: `https://wch4f-miaaa-aaaab-qadfa-cai.raw.icp0.io/`
 ![register bot](./images/registerbot.png)
 
+#### Offchain Bot: 
+- A modal will appear and you'll need to enter: 
+   1. **Bot Principal**: gotten by running the command `dfx --identity bot_identity identity get-principal`
+   2. **Bot Name**: The name you gave your bot during registration
+   3. **Bot URL**: URL for the offchain bot will be `http://localhost:13457` since it's the URL the bot is running on. 
+![offchain bot](./images/registeroffchain.png)
+
 ## Step 4: Install the Bot
 - Click on the `members` icon (3rd icon from the right in the top navbar)
 ![members](./images/members.png)
 - Go to the `Add Bots` section
 - Search for your registered bot
 - Click on the bot and install it
+
+#### Onchain Bot
 ![add bot](./images/addbots.png)
 ![install](./images/install.png)
+
+#### Offchain Bot
+![add bot](./images/echoffchain.png)
+![install](./images/installoffchain.png)
 
 ## Step 5: Test the Bot
 - Type the `/echo` command to test if the bot is working
