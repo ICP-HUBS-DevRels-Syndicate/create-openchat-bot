@@ -191,9 +191,177 @@ The code structure follows these principles:
 
 ### Extending the Bot
 
-To add new commands:
-1. Implement new command handlers in `src/bot.rs`
-2. Register the commands in the bot's initialization
-3. Update the command definitions
+To add a new command to your bot, follow these steps:
+
+1. **Create a new command file**
+   Create a new file in the `src/commands` directory, for example `src/commands/my_command.rs`:
+
+   ```rust
+   use async_trait::async_trait;
+   use oc_bots_sdk::api::command::{CommandHandler, SuccessResult};
+   use oc_bots_sdk::api::definition::*;
+   use oc_bots_sdk::types::BotCommandContext;
+   use oc_bots_sdk_offchain::AgentRuntime;
+   use std::sync::LazyLock;
+   use oc_bots_sdk::oc_api::client_factory::ClientFactory;
+
+   static DEFINITION: LazyLock<BotCommandDefinition> = LazyLock::new(MyCommand::definition);
+
+   pub struct MyCommand;
+
+   #[async_trait]
+   impl CommandHandler<AgentRuntime> for MyCommand {
+       fn definition(&self) -> &BotCommandDefinition {
+           &DEFINITION
+       }
+
+       async fn execute(
+           &self,
+           context: BotCommandContext,
+           oc_client_factory: &ClientFactory<AgentRuntime>,
+       ) -> Result<SuccessResult, String> {
+           // Your command logic here
+           let message = "Your response message";
+           
+           let response = oc_client_factory
+               .build(context)
+               .send_text_message(message)
+               .execute_then_return_message(|_, _| ());
+
+           Ok(SuccessResult { message: response })
+       }
+   }
+
+   impl MyCommand {
+       fn definition() -> BotCommandDefinition {
+           BotCommandDefinition {
+               name: "mycommand".to_string(),
+               description: Some("Description of your command".to_string()),
+               placeholder: Some("Placeholder text for the command".to_string()),
+               params: vec![
+                   // Add your command parameters here
+                   BotCommandParam {
+                       name: "param1".to_string(),
+                       description: Some("Description of the parameter".to_string()),
+                       placeholder: Some("Parameter placeholder".to_string()),
+                       required: true,
+                       param_type: BotCommandParamType::StringParam(StringParam {
+                           min_length: 1,
+                           max_length: 100,
+                           choices: Vec::new(),
+                           multi_line: false,
+                       }),
+                   },
+               ],
+               permissions: BotPermissions::from_message_permission(MessagePermission::Text),
+               default_role: None,
+           }
+       }
+   }
+   ```
+
+2. **Register the command in mod.rs**
+   Add your new command module to `src/commands/mod.rs`:
+   ```rust
+   pub mod echo;
+   pub mod my_command;
+   ```
+
+3. **Register the command in main.rs**
+   Add your command to the registry in `src/main.rs`:
+   ```rust
+   let commands = CommandHandlerRegistry::new(oc_client_factory)
+       .register(commands::echo::Echo)
+       .register(commands::my_command::MyCommand);
+   ```
+
+4. **Command Parameters**
+   You can add different types of parameters to your command:
+   - String parameters (with length constraints)
+   - Number parameters (with min/max values)
+   - Boolean parameters
+   - Choice parameters (dropdown selection)
+
+   Example of different parameter types:
+   ```rust
+   params: vec![
+       // String parameter
+       BotCommandParam {
+           name: "text".to_string(),
+           param_type: BotCommandParamType::StringParam(StringParam {
+               min_length: 1,
+               max_length: 1000,
+               choices: Vec::new(),
+               multi_line: true,
+           }),
+           // ... other fields
+       },
+       // Number parameter
+       BotCommandParam {
+           name: "count".to_string(),
+           param_type: BotCommandParamType::NumberParam(NumberParam {
+               min: 1,
+               max: 100,
+               step: 1,
+           }),
+           // ... other fields
+       },
+       // Boolean parameter
+       BotCommandParam {
+           name: "enabled".to_string(),
+           param_type: BotCommandParamType::BooleanParam,
+           // ... other fields
+       },
+       // Choice parameter
+       BotCommandParam {
+           name: "option".to_string(),
+           param_type: BotCommandParamType::StringParam(StringParam {
+               min_length: 0,
+               max_length: 100,
+               choices: vec![
+                   BotCommandOptionChoice {
+                       value: "option1".to_string(),
+                       label: "Option 1".to_string(),
+                   },
+                   BotCommandOptionChoice {
+                       value: "option2".to_string(),
+                       label: "Option 2".to_string(),
+                   },
+               ],
+               multi_line: false,
+           }),
+           // ... other fields
+       },
+   ],
+   ```
+
+5. **Accessing Parameters**
+   In your command's execute method, you can access parameters using:
+   ```rust
+   let param1 = context.command.arg("param1");
+   let param2 = context.command.arg("param2");
+   ```
+
+6. **Sending Messages**
+   You can send different types of messages:
+   ```rust
+   // Text message
+   oc_client_factory
+       .build(context)
+       .send_text_message("Your message")
+       .execute_then_return_message(|_, _| ());
+
+   // Message with markdown
+   oc_client_factory
+       .build(context)
+       .send_text_message("**Bold** and *italic* text")
+       .with_block_level_markdown(true)
+       .execute_then_return_message(|_, _| ());
+   ```
+
+After adding your command:
+1. Rebuild the bot: `cargo build`
+2. Restart the bot: `cargo run`
+3. Test your command in OpenChat using `/mycommand param1: value`
 
 You can now build your own custom made offchain bot using this template by adding new commands and logic.
