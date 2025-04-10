@@ -59,23 +59,32 @@ async function main() {
         spinner.text = 'Cloning template repository...';
         shell.exec(`git clone https://github.com/ICP-HUBS-DevRels-Syndicate/openchat-bots.git ${botName}`, { silent: true });
 
-        // Navigate to the correct example directory
+        // Navigate to the project directory
+        const projectDir = path.join(process.cwd(), botName);
         const exampleDir = path.join(projectDir, `${botType}-example`);
         const otherType = botType === 'offchain' ? 'onchain' : 'offchain';
         
         spinner.text = 'Setting up project structure...';
-        // Copy only the needed example directory and common files
-        shell.cp('-r', path.join(projectDir, 'REGISTER-BOT.md'), projectDir);
-        shell.cp('-r', path.join(projectDir, `${botType}-example`), projectDir);
-        shell.mv(path.join(projectDir, `${botType}-example`), path.join(projectDir, 'src'));
+        
+        // Create new directory structure
+        shell.mkdir('-p', path.join(projectDir, 'src'));
+        
+        // Copy files from example directory to src maintaining the structure
+        shell.cp('-r', `${exampleDir}/*`, path.join(projectDir, 'src'));
+        
+        // Copy REGISTER-BOT.md to project root
+        shell.cp(path.join(projectDir, 'REGISTER-BOT.md'), projectDir);
         
         // Clean up unnecessary files
         spinner.text = 'Cleaning up temporary files...';
-        shell.rm('-rf', path.join(projectDir, `${otherType}-example`));
-        shell.rm('-rf', path.join(projectDir, '.git'));
-        shell.rm('-rf', path.join(projectDir, 'README.md'));
+        shell.rm('-rf', [
+            path.join(projectDir, `${otherType}-example`),
+            path.join(projectDir, '.git'),
+            path.join(projectDir, 'README.md'),
+            path.join(projectDir, `${botType}-example`)  // Remove original example directory after copying
+        ]);
         
-        // Navigate to source directory
+        // Navigate to src directory
         shell.cd(path.join(projectDir, 'src'));
 
         if (botType === 'offchain') {
@@ -87,10 +96,19 @@ async function main() {
             // Update identity name in setup_bot.sh
             shell.sed('-i', 'bot_identity', `${botName}_identity`, 'scripts/setup_bot.sh');
             
-            spinner.text = 'Running setup script...';
+            // Stop the spinner while running the setup script
+            spinner.stop();
+            console.log(blue('\nRunning setup script...\n'));
+            
             // Make setup script executable and run it
             shell.chmod('+x', 'scripts/setup_bot.sh');
-            shell.exec('./scripts/setup_bot.sh', { silent: true });
+            const result = shell.exec('./scripts/setup_bot.sh');
+            
+            if (result.code !== 0) {
+                console.error(red('Setup script failed:'));
+                console.error(result.stderr);
+                process.exit(1);
+            }
         } else {
             spinner.text = 'Updating package configuration...';
             // Update package name in Cargo.toml
@@ -100,21 +118,32 @@ async function main() {
             // Update canister name in deploy_bot.sh
             shell.sed('-i', 'onchain_bot', botName, 'scripts/deploy_bot.sh');
             
-            spinner.text = 'Running deployment script...';
+            // Stop the spinner while running the deployment script
+            spinner.stop();
+            console.log(blue('\nRunning deployment script...\n'));
+            
             // Make deploy script executable and run it
             shell.chmod('+x', 'scripts/deploy_bot.sh');
-            shell.exec('./scripts/deploy_bot.sh', { silent: true });
+            const result = shell.exec('./scripts/deploy_bot.sh');
+            
+            if (result.code !== 0) {
+                console.error(red('Deployment script failed:'));
+                console.error(result.stderr);
+                process.exit(1);
+            }
         }
 
-        spinner.succeed(green('Bot created successfully!'));
+        // Only show success message if scripts ran successfully
+        console.log(green('\nBot created successfully!'));
 
         // Display next steps
         console.log('\nNext steps:');
-        console.log(`1. Navigate to your bot directory: ${blue(`cd ${botName}/${botType}-example`)}`);
+        console.log(`1. Navigate to your bot directory: ${blue(`cd ${botName}/`)}`);
         if (botType === 'offchain') {
+            console.log(`1. Run the setup script: ${blue('./src/scripts/setup_bot.sh')}`);
             console.log(`2. Start your bot: ${blue('cargo run')}`);
         } else {
-            console.log(`2. Deploy your bot: ${blue('./scripts/deploy_bot.sh')}`);
+            console.log(`1. Deploy your bot: ${blue('./scripts/deploy_bot.sh')}`);
         }
         console.log(`3. Follow the registration instructions in ${blue('REGISTER-BOT.md')}`);
         console.log('\nHappy bot building! 🎉\n');
