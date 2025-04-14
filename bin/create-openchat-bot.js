@@ -124,6 +124,32 @@ async function main() {
             shell.sed('-i', 'name = "onchain_bot"', `name = "${botName}"`, 'Cargo.toml');
             
             spinner.text = 'Configuring canister...';
+            // Create dfx.json with proper canister configuration
+            const dfxJson = {
+                "dfx": "0.26.0-beta.1",
+                "canisters": {
+                    [botName]: {
+                        "type": "rust",
+                        "package": botName,
+                        "candid": "can.did",
+                        "gzip": true
+                    }
+                },
+                "networks": {
+                    "local": {
+                        "bind": "127.0.0.1:8080",
+                        "type": "ephemeral",
+                        "replica": {
+                            "subnet_type": "system"
+                        }
+                    }
+                },
+                "version": 1
+            };
+            
+            // Write the updated dfx.json
+            fs.writeFileSync('dfx.json', JSON.stringify(dfxJson, null, 2));
+            
             // Update canister name in deploy_bot.sh
             shell.sed('-i', 'onchain_bot', botName, 'scripts/deploy_bot.sh');
             
@@ -153,7 +179,7 @@ async function main() {
         } else {
             console.log(`2. Deploy your bot: ${blue('./scripts/deploy_bot.sh')}`);
         }
-        console.log(`3. Follow the bot registration instructions at: ${blue('https://github.com/open-chat-labs/open-chat-bots/blob/main/GETSTARTED.md#step-3-create-account-and-test-group')}`);
+        console.log(`3. Follow the bot registration instructions at: ${blue('https://github.com/ICP-HUBS-DevRels-Syndicate/openchat-bots/blob/main/REGISTER-BOT.md')}`);
         console.log('\nHappy bot building! 🎉\n');
 
     } catch (error) {
