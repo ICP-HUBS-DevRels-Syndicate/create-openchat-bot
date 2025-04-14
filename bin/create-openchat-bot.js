@@ -92,30 +92,31 @@ async function main() {
             spinner.text = 'Updating package configuration...';
             
             // Update Cargo.toml with latest dependencies
-            const cargoToml = `[package]
-name = "${botName}"
-version = "0.1.0"
-edition = "2021"
+//             const cargoToml = `[package]
+// name = "${botName}"
+// version = "0.1.0"
+// edition = "2021"
 
-[dependencies]
-async-trait = "0.1.77"
-axum = "0.7.4"
-candid = "0.10.3"
-dotenv = "0.15.0"
-http = "1.0.0"
-ic-agent = "0.31.0"
-oc_bots_sdk = { git = "https://github.com/open-chat-labs/open-chat-bots.git", branch = "main" }
-oc_bots_sdk_offchain = { git = "https://github.com/open-chat-labs/open-chat-bots.git", branch = "main" }
-reqwest = "0.11.24"
-serde = { version = "1.0.196", features = ["derive"] }
-serde_json = "1.0.113"
-tokio = { version = "1.36.0", features = ["full"] }
-tower-http = { version = "0.5.1", features = ["cors", "trace"] }
-tracing = "0.1.40"
-tracing-subscriber = "0.3.18"`;
+// [dependencies]
+// async-trait = "0.1.77"
+// axum = "0.7.4"
+// candid = "0.10.3"
+// dotenv = "0.15.0"
+// http = "1.0.0"
+// ic-agent = "0.31.0"
+// oc_bots_sdk = { git = "https://github.com/open-chat-labs/open-chat-bots.git", branch = "main" }
+// oc_bots_sdk_offchain = { git = "https://github.com/open-chat-labs/open-chat-bots.git", branch = "main" }
+// reqwest = "0.11.24"
+// serde = { version = "1.0.196", features = ["derive"] }
+// serde_json = "1.0.113"
+// tokio = { version = "1.36.0", features = ["full"] }
+// tower-http = { version = "0.5.1", features = ["cors", "trace"] }
+// tracing = "0.1.40"
+// tracing-subscriber = "0.3.18"
+// toml = "0.8.8"`;
 
-            // Write the updated Cargo.toml
-            fs.writeFileSync('Cargo.toml', cargoToml);
+//             // Write the updated Cargo.toml
+//             fs.writeFileSync('Cargo.toml', cargoToml);
             
             spinner.text = 'Configuring bot identity...';
             // Update identity name in setup_bot.sh
