@@ -177,9 +177,9 @@ async function main() {
         if (botType === 'offchain') {
             console.log(`2. Start your bot: ${blue('cargo run')}`);
         } else {
-            console.log(`2. Deploy your bot: ${blue('./scripts/deploy_bot.sh')}`);
+            console.log(`2. When testing out the new changes to your bot, re-deploy it using the command: ${blue('dfx deploy --playground')}`);
         }
-        console.log(`3. Follow the bot registration instructions at: ${blue('https://github.com/ICP-HUBS-DevRels-Syndicate/openchat-bots/blob/main/REGISTER-BOT.md')}`);
+        console.log(`3. Follow the bot registration instructions at: ${blue('https://www.npmjs.com/package/create-openchat-bot')}`);
         console.log('\nHappy bot building! 🎉\n');
 
     } catch (error) {
