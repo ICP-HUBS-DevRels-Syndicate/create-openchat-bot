@@ -31,8 +31,8 @@ EOF
 
 echo "Configuration file created successfully!"
 
-# Step 5: Build and run
-echo "Building and running the bot..."
-cargo build && cargo run
+# Step 5: Build the bot
+echo "Building the bot..."
+cargo build 
 
 echo "Setup complete!" 
