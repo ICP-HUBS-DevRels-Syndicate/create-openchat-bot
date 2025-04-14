@@ -8,9 +8,8 @@ use axum::{
 use dotenv::dotenv;
 use oc_bots_sdk::api::command::{CommandHandlerRegistry, CommandResponse};
 use oc_bots_sdk::api::definition::BotDefinition;
-use oc_bots_sdk::oc_api::client_factory::ClientFactory;
+use oc_bots_sdk::oc_api::client::ClientFactory;
 use oc_bots_sdk_offchain::{env, AgentRuntime};
-use serde::Deserialize;
 use std::net::{Ipv4Addr, SocketAddr};
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
@@ -25,22 +24,6 @@ mod commands;
 struct AppState {
     oc_public_key: String,
     commands: CommandHandlerRegistry<AgentRuntime>,
-}
-
-// Python API bot info
-#[derive(Deserialize, Debug)]
-struct BotInfo {
-    name: String,
-    role: String,
-    expertise: String,
-}
-
-// Add this struct to deserialize the command data
-#[derive(Deserialize, Debug)]
-struct CommandRequest {
-    jwt: String,
-    #[serde(rename = "commandRequest")]
-    command_request: serde_json::Value,
 }
 
 #[tokio::main]

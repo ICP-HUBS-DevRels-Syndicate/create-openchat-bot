@@ -3,7 +3,7 @@ use oc_bots_sdk::api::command::{CommandHandler, SuccessResult};
 use oc_bots_sdk::api::definition::*;
 use oc_bots_sdk::types::BotCommandContext;
 use oc_bots_sdk_offchain::AgentRuntime;
-use oc_bots_sdk::oc_api::client_factory::ClientFactory;
+use oc_bots_sdk::oc_api::client::Client;
 use std::sync::LazyLock;
 
 static DEFINITION: LazyLock<BotCommandDefinition> = LazyLock::new(Echo::definition);
@@ -18,13 +18,11 @@ impl CommandHandler<AgentRuntime> for Echo {
 
     async fn execute(
         &self,
-        context: BotCommandContext,
-        client_factory: &ClientFactory<AgentRuntime>,
+        client: Client<AgentRuntime, BotCommandContext>,
     ) -> Result<SuccessResult, String> {
-        let text = context.command.arg::<String>("message").to_string();
+        let text = client.context().command.arg::<String>("message").to_string();
 
-        let message = client_factory
-            .build(context)
+        let message = client
             .send_text_message(text)
             .with_block_level_markdown(true)
             .execute_then_return_message(|_, _| ());
@@ -53,6 +51,7 @@ impl Echo {
             }],
             permissions: BotPermissions::from_message_permission(MessagePermission::Text),
             default_role: None,
+            direct_messages: Some(true),
         }
     }
 } 
