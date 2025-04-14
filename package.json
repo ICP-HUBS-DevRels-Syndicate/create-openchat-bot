@@ -1,6 +1,6 @@
 {
   "name": "create-openchat-bot",
-  "version": "1.0.1",
+  "version": "1.0.12",
   "description": "CLI tool to create OpenChat bot templates",
   "main": "index.js",
   "bin": {
