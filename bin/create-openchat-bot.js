@@ -90,6 +90,8 @@ async function main() {
 
         if (botType === 'offchain') {
             spinner.text = 'Updating package configuration...';
+            // Update package name in Cargo.toml
+            shell.sed('-i', 'name = "offchain_bot"', `name = "${botName}"`, 'Cargo.toml');
             
             spinner.text = 'Configuring bot identity...';
             // Update identity name in setup_bot.sh
