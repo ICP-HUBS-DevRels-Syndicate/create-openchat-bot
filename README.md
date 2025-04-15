@@ -21,6 +21,18 @@ This will:
 4. Set up the necessary configuration
 5. Run the appropriate setup script
 
+## Overview: 
+You can find an overview of the OpenChat Bot framework [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/OVERVIEW.md)
+
+## SDKs: 
+SDKs are available in different languages: 
+- Rust SDK, see the documentation [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/rs/README.md)
+- Typescript SDK, see the documentation [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/ts/README.md)
+- Motoko SDK, see the documentation [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/motoko/README.md)
+
+
+### Note: _This package is in beta mode and it currently only supports the Rust SDK, the motoko and typescript sdk are in the pipeline._
+
 ## Bot Types
 
 ### Offchain Bot
@@ -37,14 +49,9 @@ This will:
 
 ## Prerequisites
 
-### For Offchain Bots
+For both onchain and offchain bot, you need to have installed the following tools: 
 - [Rust](https://www.rust-lang.org/tools/install)
 - [DFX](https://internetcomputer.org/docs/current/developer-docs/setup/install/) (for identity management)
-
-### For Onchain Bots
-- [Rust](https://www.rust-lang.org/tools/install)
-- [DFX](https://internetcomputer.org/docs/current/developer-docs/setup/install/)
-- Internet Computer tools
 
 # Registering Your Bot
 
