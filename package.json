@@ -1,6 +1,6 @@
 {
   "name": "create-openchat-bot",
-  "version": "1.1.0-beta.1",
+  "version": "1.1.0-beta.2",
   "description": "CLI tool to create OpenChat bot templates",
   "main": "index.js",
   "bin": {
@@ -12,6 +12,14 @@
   "keywords": ["openchat", "bot", "template", "scaffold"],
   "author": "ICP HUBS DevRels Syndicate",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ICP-HUBS-DevRels-Syndicate/openchat-bots.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ICP-HUBS-DevRels-Syndicate/openchat-bots/issues"
+  },
+  "homepage": "https://github.com/ICP-HUBS-DevRels-Syndicate/openchat-bots#readme",
   "dependencies": {
     "chalk": "^4.1.2",
     "inquirer": "^8.2.5",
