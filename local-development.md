@@ -52,3 +52,22 @@ When you're ready to publish your changes:
    ```bash
    npm publish
    ```
+
+### Updating & Publishing the package: 
+1. Update version number: 
+- ``npm version patch`` - for small bug fixes (e.g., 1.0.0 → 1.0.1)
+- ``npm version minor`` - for new features (e.g., 1.0.0 → 1.1.0)
+- ``npm version major`` - for breaking changes (e.g., 1.0.0 → 2.0.0)
+
+2. After updating the version, you'll need to:
+```bash
+   git add .
+   git commit -m "chore: bump version to x.x.x"
+   git tag vx.x.x
+   git push origin main --tags
+```
+
+3. Then you can publish the new version: 
+```bash 
+   npm publish
+``` 
