@@ -1,6 +1,6 @@
 # Create OpenChat Bot
 
-A CLI tool to quickly scaffold OpenChat bot templates.
+A CLI tool for instantly creating an OpenChat bots.
 
 ## Installation
 
