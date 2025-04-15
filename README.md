@@ -1,6 +1,26 @@
 # Create OpenChat Bot
 
-A CLI tool for instantly creating an OpenChat bots.
+A CLI tool for instantly creating OpenChat bots.
+
+[![npm version](https://img.shields.io/npm/v/create-openchat-bot.svg)](https://www.npmjs.com/package/create-openchat-bot)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Registering Your Bot](#registering-your-bot)
+- [SDK Documentation for Rust bots](#sdk-documentation-for-rust-bots)
+- [Bot Types](#bot-types)
+- [SDKs](#sdks)
+- [Overview](#overview)
+- [License](#license)
+
+## Prerequisites
+
+For both onchain and offchain bot, you need to have installed the following tools: 
+- [Rust](https://www.rust-lang.org/tools/install)
+- [DFX](https://internetcomputer.org/docs/current/developer-docs/setup/install/) (for identity management)
 
 ## Installation
 
@@ -21,17 +41,14 @@ This will:
 4. Set up the necessary configuration
 5. Run the appropriate setup script
 
-## Overview: 
-You can find an overview of the OpenChat Bot framework [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/OVERVIEW.md)
+## Registering Your Bot
 
-## SDKs: 
-SDKs are available in different languages: 
-- Rust SDK, see the documentation [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/rs/README.md)
-- Typescript SDK, see the documentation [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/ts/README.md)
-- Motoko SDK, see the documentation [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/motoko/README.md)
+Follow the instructions [here](https://github.com/ICP-HUBS-DevRels-Syndicate/openchat-bots/blob/main/REGISTER-BOT.md) to register your bot with OC and test it out.
 
+> **Note:** This package is in beta mode and currently only supports the Rust SDK. The Motoko and TypeScript SDKs are in the pipeline.
 
-### Note: _This package is in beta mode and it currently only supports the Rust SDK, the motoko and typescript sdk are in the pipeline._
+## SDK Documentation for Rust bots: 
+You can now check out the SDK documentation for rust bots [here](https://github.com/open-chat-labs/open-chat-bots/tree/main/rs/sdk)
 
 ## Bot Types
 
@@ -47,15 +64,12 @@ SDKs are available in different languages:
 - More complex setup
 - Requires DFX and Internet Computer tools
 
-## Prerequisites
+## SDKs
 
-For both onchain and offchain bot, you need to have installed the following tools: 
-- [Rust](https://www.rust-lang.org/tools/install)
-- [DFX](https://internetcomputer.org/docs/current/developer-docs/setup/install/) (for identity management)
-
-# Registering Your Bot
-
-Follow the instructions [here](https://github.com/ICP-HUBS-DevRels-Syndicate/openchat-bots/blob/main/REGISTER-BOT.md)
+SDKs are available in different languages: 
+- Rust SDK, see the documentation [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/rs/README.md)
+- Typescript SDK, see the documentation [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/ts/README.md)
+- Motoko SDK, see the documentation [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/motoko/README.md)
 
 ## License
 
