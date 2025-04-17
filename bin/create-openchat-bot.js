@@ -66,27 +66,34 @@ async function main() {
         
         spinner.text = 'Setting up project structure...';
         
-        // Create new directory structure
-        shell.mkdir('-p', path.join(projectDir, 'src'));
-        
-        // Copy files from example directory to src maintaining the structure
-        shell.cp('-r', `${exampleDir}/*`, path.join(projectDir, 'src'));
+        // Copy necessary files from example directory
+        shell.cp('-r', `${exampleDir}/src`, projectDir);
+        shell.cp('-r', `${exampleDir}/Cargo.toml`, projectDir);
+        shell.cp('-r', `${exampleDir}/Cargo.lock`, projectDir);
+        shell.cp('-r', `${exampleDir}/config.toml`, projectDir);
+        shell.cp('-r', `${exampleDir}/scripts`, projectDir);
+        if (botType === 'onchain') {
+            shell.cp('-r', `${exampleDir}/dfx.json`, projectDir);
+            shell.cp('-r', `${exampleDir}/can.did`, projectDir);
+        }
         
         // Clean up unnecessary files and directories
         spinner.text = 'Cleaning up temporary files...';
         shell.rm('-rf', [
             path.join(projectDir, `${otherType}-example`),
             path.join(projectDir, '.git'),
-            path.join(projectDir, 'README.md'),
             path.join(projectDir, `${botType}-example`),
             path.join(projectDir, 'bin'),
             path.join(projectDir, 'images'),
             path.join(projectDir, 'BOT-DOCUMENTATION.md'),
-            path.join(projectDir, 'REGISTER-BOT.md')
+            path.join(projectDir, 'REGISTER-BOT.md'), 
+            path.join(projectDir, 'local-development.md'),
+            path.join(projectDir, 'package.json'),
+            path.join(projectDir, 'package-lock.json')
         ]);
         
-        // Navigate to src directory
-        shell.cd(path.join(projectDir, 'src'));
+        // Navigate to project directory
+        shell.cd(projectDir);
 
         if (botType === 'offchain') {
             spinner.text = 'Updating package configuration...';
@@ -170,18 +177,27 @@ async function main() {
             }
         }
 
+        // Initialize git repository and create initial commit
+        spinner.text = 'Initializing git repository...';
+        shell.exec('git init', { silent: true });
+        shell.exec('git add .', { silent: true });
+        shell.exec('git commit -m "Initial commit: OpenChat bot created with create-openchat-bot"', { silent: true });
+        spinner.succeed('Git repository initialized with initial commit');
+
         // Only show success message if scripts ran successfully
         console.log(green('\nBot created successfully!'));
 
         // Display next steps
         console.log('\nNext steps:');
-        console.log(`1. Navigate to your bot directory: ${blue(`cd ${botName}/src`)}`);
+        console.log(`1. Navigate to your bot directory: ${blue(`cd ${botName}`)}`);
         if (botType === 'offchain') {
             console.log(`2. Start your bot: ${blue('cargo run')}`);
         } else {
             console.log(`2. When testing out the new changes to your bot, re-deploy it using the command: ${blue('./scripts/deploy_bot.sh')}`);
         }
         console.log(`3. Follow the bot registration instructions at: ${blue('https://www.npmjs.com/package/create-openchat-bot')}`);
+        console.log('\nYour git repository has been initialized with an initial commit.');
+        console.log('You can now create a remote repository and push your changes.\n');
         console.log('\nHappy bot building! 🎉\n');
 
     } catch (error) {
