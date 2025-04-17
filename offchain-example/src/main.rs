@@ -84,7 +84,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 // Bot definition endpoint
-async fn bot_definition(State(state): State<Arc<AppState>>) -> (StatusCode, Bytes) {
+async fn bot_definition(State(state): State<Arc<AppState>>) -> (StatusCode, HeaderMap, Bytes) {
     let commands = state.commands.definitions();
     
     let definition = BotDefinition {
@@ -92,9 +92,16 @@ async fn bot_definition(State(state): State<Arc<AppState>>) -> (StatusCode, Byte
         commands,
         autonomous_config: None,
     };
+    
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        axum::http::header::CONTENT_TYPE,
+        "application/json".parse().unwrap(),
+    );
 
     (
         StatusCode::OK,
+        headers,
         Bytes::from(serde_json::to_vec(&definition).unwrap()),
     )
 }
