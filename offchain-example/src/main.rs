@@ -91,8 +91,6 @@ async fn bot_definition(State(state): State<Arc<AppState>>) -> (StatusCode, Head
         description: "A simple echo bot that repeats your messages".to_string(),
         commands,
         autonomous_config: None,
-        default_subscriptions: None,
-        data_encoding: None,
     };
     
     let mut headers = HeaderMap::new();
