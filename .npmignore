@@ -1,0 +1,40 @@
+# Development files
+.git/
+.gitignore
+.cursorindexingignore
+.DS_Store
+.specstory/
+
+# Examples and documentation that shouldn't be in the published package
+offchain-example/
+onchain-example/
+images/
+BOT-DOCUMENTATION.md
+REGISTER-BOT.md
+local-development.md
+
+# Node.js
+node_modules/
+package-lock.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# Debug
+*.pdb
+
+# Rust specific
+target/
+**/*.rs.bk
+Cargo.lock
+.cargo/
+
+# DFX specific
+.dfx/ 
